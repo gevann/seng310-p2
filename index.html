@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>SENG 310 -- UVIC 2017 -- P2</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      a.anchor {
+        display: block;
+        position: relative;
+        top: -50px;
+        visibility: hidden;
+      }
+      .footer {
+        width: 100%;
+        /* Set the fixed height of the footer here */
+        height: 60px;
+        line-height: 60px; /* Vertically center the text there */
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body style="padding-top: 70px;">
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <ul class="nav navbar-nav">
+          <li><a href="#concept">Conceptual model</a></li>
+          <li><a href="#data">Data</a></li>
+          <li><a href="#interface">Interface</a></li>
+          <li><a href="#mods">Modifications</a></li>
+          <li><a href="#personae">Personae</a></li>
+          <li><a href="#scenarios">Scenarios/use cases</a></li>
+          <li><a href="#goals">Goals</a></li>
+          <li><a href="#requirements">Requirements</a></li>
+          <li><a href="#widgets">Widgets</a></li>
+          <li><a href="#design">Design</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="concept"></a>
+          <h1 class="page-header" id="conceptual-model">Conceptual Model</h1>
+          <p>The application, based on <a href="https://grahamcmacdonald.wixsite.com/seng310b01p5phase1">this original design document</a>, is designed to be
+            first and foremost a tool for class registration at the University of Victoria (UVIC), with secondary functions of displaying the student's class
+            schedule as well as listing the textbooks required or suggested for each course the student is registered in. An ancillary usage of the
+            application is a course search, which is integrated directly into the registration system as a necessary first step.</p>
+          <p>For the primary function of course registration, the application takes as input a user-generated string, such as 'first year after 10am', and
+            displays an ordered series of suggested courses to match the given criteria. The suggested courses are shown alongside the user's current class
+            schedule. A detailed view of the course listing is provided to the user should they select any course, at the same time the course being
+            inspected is superimposed upon the user's current schedule at the appropriate time. From the course-details the user can save the course for
+            later (which places the course in the user's schedule but does not register the user in the course), or register for the course. This primary
+            feature of the application is designed to fit the conversing-style conceptual model of the search engine; the search bar acts as user input as in
+            most other search engines, while the courses are displayed in a list ordered by best-fit, in the same manner as the common search engine's
+            output. Additionally, the results list is designed to fit the exploring and browsing style conceptual model just as online search-engine websites
+            are. This is done in order to provide a set of perceived affordances (learned conventions) to the user - those which they employ to use internet
+            search engines - which in turn is designed to increase both the learnability and memorability of the application.</p>
+          <p>The schedule-viewer secondary function is designed with the conceptual model of a physical calendar. It represents days as the columns of a
+            grid, times as the rows. Entries in the schedule are two-dimensional squares blocking out the grid-pattern of the calendar with an outlined
+            shape, background colour, and label, making use of the concept model of a paper note placed upon a physical calendar. Both of these models fall
+            into the browsing style of concept models. While the schedule displayed alongside the search results is similar to the one previously described,
+            it is nevertheless a manipulating-style conceptual model, owing to the fact that the user can interact with the items displayed on the schedule
+            via direct manipulation.</p>
+          <p>The final usage of the application - displaying the relevant textbooks given the user's registered courses - follows the conceptual model of the
+            list. Each entry of the list represents a single textbook. The attributes of each entry include the book title, author's list, the status of book
+            regarding it's usage in the course (whether it is mandatory or suggested), the title of the course it is used in, and the name of the professor
+            teaching said course. Users are able to get an additionally detailed view of the book by selecting its entry in the list. This detailed view has
+            the additional attributes of an image of the book's cover, any subtitles of the book, the location of the book in the bookstore, and the
+            availability of used copies in the bookstore. None of this information can be changed through this view, as such, the concept model here falls
+            under the category of exploration and browsing, rather than direct manipulation.</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="data"></a>
+          <h1 class="page-header" id="data-required">Data Required</h1>
+          <p>The application has multiple sources of necessary data. These include:</p>
+          <ul>
+            <li>all courses offered at UVIC</li>
+            <li>user transcripts</li>
+            <li>user course of study</li>
+            <li>all course requirements, in full, for each course of study offered by UVIC</li>
+            <li>and user given search queries</li>
+          </ul>
+
+          <h2 id="courses-offered-at-uvic">Courses offered at UVIC</h2>
+          <p>The application's primary function is provide UVIC students a means of finding and registering for courses at the university. In order to
+            achieve this goal, the application requires the set of all courses being offered by UVIC for the next term eligible for registration, at the
+            least. Without this data it is impossible for the application to present available courses to the student.</p>
+
+          <h2 id="user-transcripts-course-of-study-and-the-program-requirements-for-each-course-of-study-at-uvic">User transcripts, course of study, and the program requirements for each course of study at UVIC</h2>
+          <p>The application makes use of the user's transcripts in order to suggest courses. In addition to this, the application makes use of the detailed
+            requirements for each course of study provided by UVIC. These two sets of data are necessary for the application in order for it to provide
+            suggested courses to the users, such as suggesting a course which is required in the course of study - a detail that comes from the set of all
+            program requirements at uvic - yet which the user has not already taken and has the necessary prerequisites for - a detail which comes from the
+            user's transcripts and course of study.</p>
+
+          <h2 id="user-provided-search-input">User provided search input</h2>
+          <p>The application is primarily geared towards enabling the user to quickly find (and register for) courses relevant to them. This goal
+            necessitates the need for user input; the user provides additional criteria for the application to use to suggest courses, such as a faculty they
+            wish to take a course in, a year, or a time of day for the course to begin after. Without user input, the application would degrade from a search
+            engine to a list.</p>
+        </div>
+      </div>
+
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="interface"></a>
+          <h1 class="page-header" id="interface-metaphors">Interface Metaphors</h1>
+          <p>
+            The main interface metaphor employed by the application is that of the search engine, which, as the book states, is &quot;meant to conjure up
+            the essence of the process of finding relevant information&quot;. In this way, the familiar concept of an engine - a physical object designed to
+            enact heavy processing for some desired result - is combined with the new concept of reducing the set of all UVIC courses to those most likely to
+            be relevant to the current user.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="mods"></a>
+          <h1 class="page-header" id="modifications-to-phase-1">Modifications to Phase 1</h1>
+          <p>
+            The document which this document is based upon has several flaws. As such, some modifications and
+            assumptions were necessary to completed this document.
+          </p>
+          <h3 id="textbook-exchange">Textbook exchange</h3>
+          <p>The original document mentions the application having a textbook exchange; however, under the listing of the key features of the application the
+            original document makes no note of a textbook exchange. Taking this into consideration, alongside the already-significant scope or designing a
+            user interface for a course search, registration, schedule viewer, and textbook lising application, the textbook exchange was removed from
+            further consideration and is not included in this design document.
+          </p>
+          <p>This results in the exclusion of the scenario of using the textbook exchange.</p>
+
+          <h3 id="user-profiles">User profiles</h3>
+          <p>The fourth user profile, Zaphod BeebleBrox, is not included in this design document. In addition to being, in our opinion, written as a joke,
+            this user profile primarily provides detailed information about how the user arrived on Earth and is not generalizable.</p>
+
+          <h3 id="user-requirements">User requirements</h3>
+          <p>The original document included both user-experience goals and usability goals under user requirements. However, no template was used for these
+            requirements. Additionally, none of the requirements make mention of any of the user-experience or usability goals as they were discussed in
+            class and examined in the textbook. As a result, wach user requirement was examined and adapted; some were found to be functional requirements
+            rather than design requirements (these were dropped form this document), others were broken out into multiple user-experience and usability goals
+            that when taken together could arguably satisfy the user requirement as written, others still were simple dropped from consideration after being
+            found to be applied to the user of the application rather than on the application itself.</p>
+
+          <h5 class="bold">Clear, concise functionality of the class registration system</h5>
+          <p>This requirement was broken out into focuses on:</p>
+
+          <ul>
+            <li>learnability</li>
+            <li>feedback</li>
+            <li>percieved affordances</li>
+            <li>consistency</li>
+          </ul>
+
+          <p>to satisfy the notion of 'clear', and:</p>
+
+          <ul>
+            <li>efficiency</li>
+          </ul>
+
+          <p>to satisfy the notion of 'concise'.</p>
+
+          <h5 class="bold">Mobile version of the site robust enough to do everything (or most things) the main version can</h5>
+          <p>
+            This requirement was dropped from consideration. A mobile design is here considered to be an entirely separate design process, requiring an
+            entirely new design document. Additionally, the problems which inspire this requirement, as mentioned in the original document, are actually
+            anti-features; the inability of mobile users to zoom the website to fit there screen. No including this anti-feature is viewed as sufficient for
+            making the site comply with this requirement without introducing an entire sub-project.
+          </p>
+
+          <h5 id="modern-user-friendly-redesign-of-the-uvic-registration-pages">Modern, user friendly redesign of the UVic registration pages</h5>
+          <p>No design requirements were adapted from the term 'modern' as it is too general to extrapolate from without significant experience in the field.</p>
+          <p>To satisfy the notion of 'user friendly', this requirement was broken out into focuses on:</p>
+
+          <ul>
+            <li>percieved affordances</li>
+            <li>consistency</li>
+            <li>learnability</li>
+            <li>memorability</li>
+            <li>utility</li>
+            <li>safety</li>
+          </ul>
+
+          <p>
+            It is noted that these overlap with those extracted from the notion of 'clear'; we argue that an application which is clear for the user is as a
+            result user friendly if it also is of high utility and ensures safety features are in place for users.
+          </p>
+
+          <h5 id="intelligent-course-selection-system-based-on-suggestions">Intelligent course selection system based on suggestions</h5>
+          <p>This requirement was dropped for consideration after being determined to be a technical functional requirement rather than an interface design requirement.</p>
+
+          <h5 id="database-should-be-able-to-recommend-courses-based-on-degree-and-be-able-to-check-with-a-students-transcript-for-past-courses">Database should be able to recommend courses based on degree and be able to check with a student’s transcript for past courses</h5>
+          <p>This requirement was dropped for the same reason as that of the above.</p>
+
+          <h5 id="visual-based-class-search-and-registration-system-to-allow-easier-registration-for-non-english-speakers.">Visual based class search and registration system to allow easier registration for non-english speakers.</h5>
+          <p>This requirement was dropped from consideration as the features of the application require text-based input, and it is not possible to verify if there is enough emphasis on non-textual elements to be considered visually based. Additionally, preferring visual cues to transfer information whenever it is of benefit to the users is considered to be covered by <em>utility</em> and <em>perceived affordances</em>.</p>
+
+          <h5 id="a-k-12-education">A K-12 education</h5>
+          <p>This requirement was dropped due to the fact that it is a requirement of the user and not a requirement of the system.</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="personae"></a>
+          <h1 class="page-header">Personae</h1>
+          <p><em>Modified from phase 1.</em></p>
+
+          <h3 id="jenna">Jenna</h3>
+          <p>Jenna is a first-year Social Sciences student who is just getting used to the UVic website’s online tools. She has only registered for courses
+            once before starting at UVic and found the entire process to be confusing, disjointed, and outdated. Because she is a new student, she doesn’t
+            really have experience with any other post-secondary websites; this means she has decided her difficulties are not due to the site. Jenna doesn’t
+            like to use her laptop to check the UVic site, so most of her visits are from her cell phone. The UVic website’s mobile experience is really
+            frustrating for Jenna because she can’t get to the right half of the page in most instances.</p>
+
+          <h3 id="paul">Paul</h3>
+          <p>Paul is a fifth-year Engineering student who transferred to the University of Victoria from Simon Fraser University in his second year. He is
+            very used to the UVic website by now; Paul has seen the main page go through a redesign, while the background registration pages have been left
+            virtually untouched. Since he’s registered for courses several times he has an excellent grasp of the steps needed to complete the task. He knows
+            in order to get all the features of the site he must use his laptop, but he can’t help but notice that his old school’s (SFU) website seems to be more modern and student-focused.</p>
+
+          <h3 id="kelly">Kelly</h3>
+          <p>Kelly is a mature student who has come back to school after working for 25 years. When she originally went to school back in the 1990’s, there
+            was no way to register for courses except by paper. Since students do almost all of their applications, registration, and course selection
+            online, Kelly wants a way to learn quickly and easily how to find courses she’s interested in. Since she hasn’t been at school for so long, Kelly
+            doesn’t know exactly what kind of courses she wants to take. Although she’s currently in the Business faculty, her degree plan calls for 10-12
+            different electives in her first two years. Since they should be in a variety of topics, Kelly is facing the task of going through UVic’s course
+            calendar in its entirety; this is a daunting task. She wishes she had a way to find out what other students have recommended, what ratings they
+            gave each course, and how it will affect her credits and eventual graduation.</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="scenarios"></a>
+          <h1 class="page-header" id="scenarios-and-use-cases">Scenarios and Use Cases</h1>
+          <p><em>Modified from phase 1</em>.</p>
+
+          <h3 id="scenario-1">Scenario 1</h3>
+          <p>Jenna has never registered for class before. She begins by logging in to the application and choosing the registration section. Due to her
+            inexperience at UVic, she is unsure what courses she has to take. She decides to see what the search will do for her, and hits enter on an empty
+            search bar. The search displays multiple courses, but she is primarily concerned with requirements, and navigates to the wants to get a list of
+            the suggested required courses for her. She clicks on the 'required' filter, and adds some suggested required courses to her schedule. During
+            this process she tries to add a course which conflicts with another course in her schedule already, however, since this is a popular first year
+            course there is another offering which does not conflict with her schedule which is suggested to her. She accepts the suggestion. After this
+            suggestion, Jenna notices a course which looks interesting, but she is not sure if she will want to take it his semester. She askes the system to save it for her in her schedule without registering for it yet.</p>
+
+          <h3 id="scenario-2">Scenario 2</h3>
+          <p>Paul only has his last few classes remaining and is not worried at all about getting into them. He takes his time, building his schedule slowly,
+            setting his earlier start time as 9:30am under the settings. Since Paul was not able to begin registering until two days after the
+            open-registration date, one of his courses is already full. When he tries to register, the system informs him that there is no room left in the
+            course, and suggests that he put himself on the waitlist. Paul accepts the suggestion. After registering for one more course, Paul decides he
+            does not want to be in the first course anymore. He views the details of it from the schedule, choosing to drop the course and have it downgraded
+            to a saved course. After thinking it over, he decides that his decision is final and chooses to delete the saved course from his schedule altogether.</p>
+
+          <h3 id="scenario-3">Scenario 3</h3>
+          <p>Kelly knows what classes she needs but not what she wants to actually take. She logs in and checks out the electives tab of the search results.
+            She adds an elective to her time table and the system tells her that the elective conflicts with a course already on her schedule. Since there
+            are no other offerings of the course, the system suggests either aborting or swapping the conflicting course for the elective. Kelly really wants
+            to get into the elective, worried that such a popular course will be quicker to fill up than the unexciting course it conflicts with. She opts
+            for the system to automatically drop her from the original course and enroll her in the new course. The system notifies her of the success, and
+            asks her if she wants to undo the action or accept. Kelly regrets her decision, and chooses to undo the action.</p>
+
+          <h3 id="scenario-4">Scenario 4</h3>
+          <p><em>Modified from phase 1</em>.</p>
+          <p>Jenna cannot remember where or when her next class is. She logs in to the application and views her schedule to get the information.</p>
+
+          <h3 id="scenario-5">Scenario 5</h3>
+          <p>Kelly is registered for courses, and wants to purchase her books. She logs in to the application and views the book list for her registered courses.</p>
+
+          <h2 id="use-cases">Use Cases</h2>
+          <p>The following use-cases have been considered -- covered more than the functionality laid out in the hierarchical task analysis:</p>
+
+          <ul>
+            <li>searching for courses</li>
+            <li>view textbooks</li>
+            <li>view schedule</li>
+            <li>add a course</li>
+            <li>drop a course</li>
+            <li>save a course</li>
+            <li>unsave a course</li>
+            <li>add a course with a conflict and a suggested alternative</li>
+            <li>add a course with a conflict and no suggested alternative</li>
+            <li>join waitlist</li>
+            <li>update default search criteria</li>
+            <li>view required courses only</li>
+            <li>view elective courses only</li>
+            <li>find similar courses</li>
+          </ul>
+
+          <h3 id="searching-for-courses">Searching for courses</h3>
+          <ol type="1">
+            <li>The user logs in to the application.</li>
+            <li>The user selects on the course registration option.</li>
+            <li>The system redirects the user to the course search engine.</li>
+            <li>The user submits a search.</li>
+            <li>The system dislay suggested results.</li>
+          </ol>
+
+          <h3 id="view-textbooks">View textbooks</h3>
+          <ol type="1">
+            <li>The user logs in to the application.</li>
+            <li>The user selects the textbooks option.</li>
+            <li>The system displays the user's textbooks.</li>
+          </ol>
+
+          <h3 id="view-schedule">View schedule</h3>
+          <ol type="1">
+            <li>The user logs in to the the application.</li>
+            <li>The user selects the view schedule option.</li>
+            <li>The application displays the user's class schedule.</li>
+          </ol>
+
+          <h3 id="add-a-course">Add a course</h3>
+          <ol type="1">
+            <li>The user selects a course from the list.</li>
+            <li>The system displays course details.</li>
+            <li>The user selects to register.</li>
+            <li>The system registers the user.</li>
+            <li>The system adds the course to the user's schedule.</li>
+          </ol>
+
+          <h3 id="drop-a-course">Drop a course</h3>
+          <ol type="1">
+            <li>The user selects a course on the schedule.</li>
+            <li>The system displays the course information.</li>
+            <li>The user chooses to drop the course.</li>
+            <li>The system drops the user from the course.</li>
+            <li>The system saves the course in the schedule.</li>
+            <li>The system announces the success of the action.</li>
+            <li>The system requires the user to accept or undo the action.</li>
+            <li>The user accepts the action.</li>
+          </ol>
+
+          <h3 id="save-a-course">Save a course</h3>
+          <ol type="1">
+            <li>The user selects a course on the schedule.</li>
+            <li>The system displays the course information.</li>
+            <li>The user chooses to save the course.</li>
+            <li>The system adds the course to the user's schedule.</li>
+          </ol>
+
+          <h3 id="unsave-a-course">Unsave a course</h3>
+          <ol type="1">
+            <li>The user selects a saved course on the schedule.</li>
+            <li>The system displays the course information.</li>
+            <li>The user chooses to unsave the course.</li>
+            <li>The system removes the course to the user's schedule.</li>
+          </ol>
+
+          <h3 id="add-a-course-with-a-conflict-and-a-suggested-alternative">Add a course with a conflict and a suggested alternative</h3>
+          <ol type="1">
+            <li>The user selects a course from the list.</li>
+            <li>The system displays course details.</li>
+            <li>The system displays the conflict on the schedule.</li>
+            <li>The user selects to register.</li>
+            <li>The system warns the user of the conflict and suggestions another offering of the course.</li>
+            <li>The user selects to register in the suggested course</li>
+            <li>The system adds the course to the user's schedule.</li>
+          </ol>
+
+          <h3 id="add-a-course-with-a-conflict-and-no-suggested-alternative">Add a course with a conflict and no suggested alternative</h3>
+          <ol type="1">
+            <li>The user selects a course from the list.</li>
+            <li>The system displays course details.</li>
+            <li>The system displays the conflict on the schedule.</li>
+            <li>The user selects to register.</li>
+            <li>The system warns the user of the conflict and offers to swap the conflicting courses, or abort.</li>
+            <li>The user selects to drop the swap the courses.</li>
+            <li>The system announces the success of the action.</li>
+            <li>The system requires the user to accept or undo the action.</li>
+            <li>The user accepts the action.</li>
+          </ol>
+          <p>Alternative courses</p>
+          <ol type="1" start="10">
+            <li>The user selects undo the action.</li>
+            <li>The system undoes the swap.</li>
+          </ol>
+
+          <h3 id="join-a-waitlist">Join a waitlist</h3>
+          <ol type="1">
+            <li>The user selects a course from the list.</li>
+            <li>The system displays course details.</li>
+            <li>The user selects to register.</li>
+            <li>The system warns the user the course is full and suggests going the waitlist.</li>
+            <li>The user selects to join the waitlist.</li>
+            <li>The system adds the user to the waitlist.</li>
+            <li>The system displays the waitlisted course on the schedule.</li>
+          </ol>
+
+          <h3 id="update-default-search-criteria">Update default search criteria</h3>
+          <ol type="1">
+            <li>The user selects the settings option.</li>
+            <li>The system display the set of settings options.</li>
+            <li>The user choose search settings.</li>
+            <li>The system displays the search options.</li>
+            <li>The user toggles those settings they desire.</li>
+          </ol>
+
+          <h3 id="view-required-courses-only">View required courses only</h3>
+          <ol type="1">
+            <li>The user selects the required filter in the search results.</li>
+            <li>The system removes all non-required courses from the results.</li>
+          </ol>
+
+          <h3 id="view-elective-courses-only">View elective courses only</h3>
+          <ol type="1">
+            <li>The user selects the elective filter in the search results.</li>
+            <li>The system removes all non-elective courses from the results.</li>
+          </ol>
+
+          <h3 id="find-similar-courses">Find similar courses</h3>
+          <ol type="1">
+            <li>The user selects a course.</li>
+            <li>The system displays the course details.</li>
+            <li>The user selects to view similar courses.</li>
+            <li>The system displays courses similiar to the selected in the results area.</li>
+            <li>The system populates the search bar with the search query that achieved these results.</li>
+          </ol>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="goals"></a>
+          <h1 class="page-header" id="usabilityuser-experience-goals-as-received">Usability/User Experience Goals as Received:</h1>
+          <h2 id="usability-goals">Usability Goals</h2>
+          <ol type="1">
+            <li>The website should be able to be used on any sized device. Making sure you don’t have to
+              use the same resolution of webpage that is used on a laptop that would be used on a mobile device.</li>
+            <li>The website should not let you sign up for multiple classes at the same time, and not let
+              the user sign up for classes that they are not allowed to be enrolled in, like classes they
+              don’t have prerequisites for or are only allowed by particular departments.</li>
+            <li>The website should offer recommendations for required or elective courses based on area of
+              study and past courses taken (respectively). This will allow for a more interactive
+              experience that may also aid students in deciding their semester’s schedule.</li>
+            <li>The website should offer an “auto-scheduling” feature that takes into account which courses
+              you’d like to take, while also using data from a small questionnaire form. For example, some
+              questions the site may ask is “do you prefer morning or evening classes?” or “what is the
+              earliest start time you would like?”</li>
+          </ol>
+
+          <h2 id="user-experience-goals">User Experience Goals</h2>
+          <ol type="1">
+            <li>It should be fast and have very subtle animations. The user is signing up for classes and has a purpose, that they do not want to spend a lot of time on.</li>
+            <li>The tabs must be visible and large enough to be able to distinguish them from other tabs, and easily clickable. When you are signing up
+              for classes there is a lot of information that must be visible. Making the font easy to read and large enough to read is a user experience goal.</li>
+            <li>Information should be available to the user either at-a-glance or by clicking on a course. With the current setup, finding information
+              like time of lecture, length, professor name, class size, available spots, waitlists, and labs are all spread across multiple pages.</li>
+            <li>The course selection process should revolve around a visual timetable setup instead of text-based entries as of now. For instance, adding
+              a course should be as simple as adding a new event on your personal calendar. The site, based on its intelligent auto-scheduling, should be
+              able to give students a rough outline of their upcoming semester. But, this shouldn’t get in the way of students being able to tweak and edit the schedule themselves.</li>
+          </ol>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="requirements"></a>
+          <h1 class="page-header" id="user-requirements-as-received">User Requirements as Received:</h1>
+          <h4 id="user-requirements-for-user-profile-1">User Requirements for User Profile #1</h4>
+          <ul>
+            <li>Clear, concise functionality of the class registration system: 'clear' assumed to be design principles of consistency, percieved affordances,
+              mapping, visibility, and feedback. 'concise' assumed to be design principle of efficiency</li>
+            <li>Mobile version of the site robust enough to do everything (or most things) the main version can: ignored -- an entirely different type of design.</li>
+          </ul>
+
+          <h4 id="user-requirements-for-user-profile-2">User Requirements for User Profile #2</h4>
+          <ul>
+            <li>Modern, user friendly redesign of the UVic registration pages: user-friendly assumed to be related to design principles learnability, safety, visibility, feedback. 'Modern' ignored.</li>
+          </ul>
+
+          <h4 id="user-requirements-for-user-profile-3">User Requirements for User Profile #3</h4>
+          <ul>
+            <li>Intelligent course selection system based on suggestions: ignored -- a technical requirement.</li>
+            <li>Database should be able to recommend courses based on degree and be able to check with a student’s transcript for past courses: ignored -- a technical requirement</li>
+          </ul>
+
+          <h4 id="user-requirements-for-user-profile-4">User Requirements for User Profile #4</h4>
+          <ul>
+            <li>Visual based class search and registration system to allow easier registration for non-english speakers</li>
+            <li>Automatic textbook finder</li>
+            <li>A K-12 education: Ignored; this requirement is non-sensical.</li>
+          </ul>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+          <a class="anchor" id="widgets"></a>
+          <h1 class="page-header">Widgets</h1>
+          <p>
+            The application's design makes heavy use of widgets. These include icons (gear, book, checkmark, exclamation point, hourglass, exchange arrows,
+            users, clock, and chevron), menus (drop down), modal dialog boxes, buttons, toggles, and radio buttons.
+          </p>
+        </div>
+      </div>
+
+      <!--images-->
+
+      <div class="row">
+        <div class="row">
+          <div class="col-xs-6 col-xs-offset-1">
+            <a class="anchor" id="design"></a>
+            <h1 class="page-header">Design</h1>
+            <p>
+              Here we present screenshots of the purposed design, representing a flow through the usage of the application covering
+              each use case. For brevity, rather than stepping through each use case and showing the corresponding images,
+              which would require a significant repetition of images shown, the flow will continue in sequence through the images and
+              explain when a use case is being covered by an image (or set of images) in the detailed text presented with each image,
+              along with the reasoning behind various choices illustrated in the design.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/01%20--%20Login.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Logging in.</h3>
+            <p>
+              The user navigates to the log in page (pictured), where they are presented with
+              the standard input fields of most major web applications. The ordering of fields,
+              and central location in the page were specifically chosen to increase the discoverability
+              of the site (how easily the user can figure out what to do) and the consistency with other
+              common websites.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/02%20--%20Landing.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>The landing page.</h3>
+            <p>
+              Here we follow the use case of adding a course. The user begins by selecting the registration
+              option. The use of three large buttons here reflects a conscious choice to remaing within the
+              limits of short term memory as suggested by Donald Norman, while providing a percieved affordance
+              of pressing.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/03%20--%20Search%20home.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Main search page.</h3>
+            <p>
+              The main search page is purposefully sparse. There are only four options provided to the user.
+            </p>
+            <ol>
+              <li>navigating to their personal home page via the <em>you@uvic.ca</em> link</li>
+              <li>checking the settings provided via the gear icon</li>
+              <li>seeking suggested courses</li>
+              <li>submitting a search</li>
+            </ol>
+            <p>
+              Again the design makes use both of purposeful restriction of the available actions,
+              intended to aid the user through <em>constraints</em>, while providing a familiar
+              interface metaphor of the search engine. This metaphor, including its commonality,
+              affords the user a chance to use knowledge in the world to comprehend the application
+              rather than having to learn how to interpret an unfamiliar interface. This was done
+              to ensure the application adhered to a high degree of learnability.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/04%20--%20Search%20results.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Basic search results.</h3>
+            <p>
+              Here we finish the use case of submitting a search. The user, on the previous page,
+              entered a search string into the search bar, submitted a blank search, or chose to
+              get suggestions without input. The system presents the best matching classes for the
+              user in a vertical list alongside an in interactive interpretation of the user's
+              current schedule.
+            </p>
+            <p>
+              The list metaphor was chosen to allow the user to intuit that the order of the
+              items matters -- like a to-do list has the most crucial entry at first, the
+              most recommended classes are at the top of the list.
+            </p>
+            <p>
+              The entries themselves make use of the cultural constraint of traffic light
+              colours; red is used to illustrate that a class is required by the users current
+              course of study, green represents an unrestricted elective, and yellow indicates
+              the partial restriction of a course that can fit a specific elective criterion.
+              Following this cultural constraint allows the design to make more use of
+              memorability as a way of reducing the amount of learning required (thereby increasing
+              the learnability as well).
+            </p>
+            <p>
+              Feedback is provided to the user by the ordering of the list, the status of the
+              class in the course of study, as well as by the highlighting of the breadth of the
+              search results being shown (here we see that all types of results are shown).
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/05%20--%20Search%20results%20-%20results%20detail,%201.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Inspecting a listed course.</h3>
+            <p>
+              The user selects a course from the suggestions provided, and the system displays
+              the course details, along with a set of course-related options. Amongst the courses
+              detailed view is visual representation of the course on the user's current schedule.
+              The enteries used for this representation are modeled after the concept of notes placed
+              upon a physical calendar without being directly written in to it. This metaphor puts the
+              user in mind of the impermanence of the display, and is illustrated through a drop-shadow
+              and slight enlargement of the entry in an effort to make them appear floating on top
+              of the calendar.
+            </p>
+            <p>
+              The actions available to the user in this view are all class-centric. This simplifies
+              the situation for the user by constraining the next actions they can to to only those
+              which apply to the most immediately preceeding action. Here that includes:
+            </p>
+            <ol>
+              <li>Registering for the course</li>
+              <li>Saving the course</li>
+              <li>Searching for similar courses</li>
+            </ol>
+            <p>
+              Each of these options will be considered below.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/06%20--%20Search%20results%20-%20course%20registered.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Registering.</h3>
+            <p>
+              Here we complete the use case of registering for a course. In the previous section the
+              user selects to register for the course and the system adds the course to their calendar
+              while exiting the detailed course view.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/07%20--%20Search%20results%20-%20registered%20course%20tooltip.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Registered course entry.</h3>
+            <p>
+              When the user hovers on the checkmark icon of the course entry in their schedule, the system
+              displays additional information, as a tooltip, explaining that the user is registered in the
+              course. This is combined with the colouring of the course entry in the calendar to provide
+              immediate, accessible and unitruisive feedback to the user.
+            </p>
+            <p>
+              From here we continue with the use case of saving a class, which the user begins by selecting
+              the class on which to perform the action, maintaining <em>consistency</em> when taking
+              actions on classes.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/08%20--%20Search%20results%20-%20results%20detail,%201.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Inspecting a listed item, again.</h3>
+            <p>
+              The system presents the course details of the selected course, as it did before. Here
+              the use case of saving a course ends when the user selects the save option.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/09%20--%20Search%20results%20-%20course%20saved.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Saved course entry.</h3>
+            <p>
+              In a manner consistent with the course registration use case, the system adds the saved
+              course to the user's calendar. In this case the entry in the course is faded-grey in colour,
+              purposefully chosen to evoke parallels with disabled buttons and actions commonly applied
+              to most web-apps. The saved course is, in a way, thought of as a disabled course.
+            </p>
+            <p>
+              Additionally, the icon indicating the status of a saved course is an exclamation point -
+              as opposed to the checkmark found on a registered course - and the system displays additional
+              information explaining that the user is not yet registered in the course when the icon is
+              hovered over.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/10%20--%20Search%20results%20-%20electives%20only.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Electives only.</h3>
+            <p>
+              This image shows the conclusion of the use case of filtering the systems suggestions to
+              include only elective courses (not-required courses). The user has selected the electives
+              option for the search results from amongst the three generalized types of results available
+              (all results, required courses only, elective courses only). These options are displayed
+              in a manner similiar to the search-restriction options of Google in order to maintain a
+              consistent set of similarities with other -- more popular -- search engine metaphors as
+              well as enabling the users an efficient means of modifying a set of results; only a single
+              selection is required to switch between any of the three many cases. Efficiency was of
+              prime importance to the design to statisfy the original requirement of being 'concise'.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/11%20--%20Search%20results%20-%20conflict.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Adding a course with a conflict.</h3>
+            <p>
+              This image and the following six, illustrate the use cases of registering for a course
+              when there is a conflict and there is an alternative offering of the course or not.
+            </p>
+            <p>
+              When the user selects a course from the results, the detailed view presented is modified
+              from the view provided when there is not conflict. The register button is coloured red, as
+              are the schedule-entries for the course with which there is a conflict. Here the user is
+              able to apply their cultural knowledge of red being associated with stopping and with
+              warnings to understand how this case is different than others.
+            </p>
+            <p>
+              Additionally, the selected course is displayed halfway overlapping the original course,
+              between them a exchange icon is set to allow the user to understand the feedback being
+              provided without necessarily having to read it.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/12%20--%20Search%20results%20-%20conflict,%20forcing%20function,%20no%20alternative.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Forcing function.</h3>
+            <p>
+              When the user tries to register in a course that conflicts with another, an extra
+              step is required -- a forcing function -- to purposefully make the process more
+              difficult in an effort to protect the user from being able to mistake the current
+              process for the more common process of registering for a course without any conflicts.
+            </p>
+            <p>
+              The intermediate step makes further use of the cultural connotations of the colour red,
+              as well was text written in all capital letters, to indicate a warning of to user of
+              a potentially destructive action. The user is presented with the updated option of
+              dropping the original course and simultanously registering in the new course, or aborting
+              the option altogther. This joint option was provided to keep the application efficient;
+              since an intermediate step was included in the form of a forcing function, the user is
+              provided a way to do both actions (dropping and registering) at the same time rather than
+              requiring them to do each in sequence.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/13%20--%20Search%20results%20-%20conflict,%20forcing%20function,%20alternative%20suggested.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Adding a course with a conflict, 2.</h3>
+            <p>
+              Here we see an alternative view of selecting the details of a course that conflicts
+              with another course. In this case, the selected course has an additional offering at
+              a time which does not conflict with the user's current schedule and the user is presented
+              the suggestion of registering for this alternative offering rather than the original.
+            </p>
+            <p>
+              As before, red buttons and fonts are employed to draw the users attention. If the
+              user elects to register, then the application proceeds as it does in the case of
+              adding a course without conflict.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/14%20--%20Search%20results%20-%20electives%20only,%20alternative%20suggested.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Registered course entry, via suggestion.</h3>
+            <p>
+              This screen shows the results of the user accepting the systems suggestion of registration
+              in an alternative, non-conflicting version of the original course. Since they registered for
+              the course rather than saving the course, the entry in the schedule is colour blue and marked
+              with a checkmark icon.
+            </p>
+            <p>
+              This concludes the use case of registering for a course which has both a conflict as well
+              as an alternative, non-conflicting, offering.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/15%20--%20Search%20results%20-%20course-swap%20safety%20prompt.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Safety prompt.</h3>
+            <p>
+              This images shows the results of the user choosing the drop and register option provided
+              by the forcing function in the use case of registering for a course with a conflict.
+            </p>
+            <p>
+              The prompt shown forces the user to reconsider the destructive action they just undertook,
+              either accepting it or choosing to have it undone. The goal driving this is <em>safety</em>,
+              which stemmed from the original design's desire to be 'user-friendly'.
+            </p>
+            <p>
+              The prompt also serves to provide the user with convenient feedback at a level slightly
+              above that employed from non-destructive changes.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/10%20--%20Search%20results%20-%20electives%20only.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Undone.</h3>
+            <p>
+              This image shows the results of the user choosing to undo the drop and register action when
+              provided the opportunity by the saftey prompt. The system has reregistered the user in the
+              original course and removed the detailed view.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/16%20--%20Search%20results%20-%20electives%20only,%20class%20swapped.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Accepted.</h3>
+            <p>
+              This image shows the results of the using choosing to accept the drop and register action
+              when provided the opportunity by the safety prompt. The prompt is dismissed, and no other
+              action is taken.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/17%20--%20Search%20results%20-%20required%20only.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Required only.</h3>
+            <p>
+              This image shows the conclusion of the use case of filtering the systems suggestions to
+              include only required courses. The user has selected the required option for the search
+              results from amongst the three generalized types of results available, in the same way
+              they did in the electives-only filtering use case perviously shown.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/18%20--%20Search%20results%20-%20required%20only,%20waitlist%20prompt.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>A full class.</h3>
+            <p>
+              This view, and the two that follow, illustrated the use case of joining the waitlist of
+              a class.
+            </p>
+            <p>
+              The user selects the desired class from the list, and is shown the course details view,
+              just as they were with the similiar cases. In this case, the view makes use of the
+              connotation of green providing extra information to the user -- a view popularized by
+              the popular Twitter Bootstrap framework -- to provide unintrusive feedback to the
+              user that something is different from the regular use case.
+              The icon of a human in the top row of the class details, normally black, has been coloured
+              red to draw the users attention to the zero available seats (further indicated by the
+              actual seat count displayed beside the icon). The actions provided to the user here are
+              to save the course and search for similar courses, as with all other detailed course views,
+              as well as to join the courses waitlist as opposed to registering in the course.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/19%20--%20Search%20results%20-%20required%20only,%20waitlisted.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Joining the waitlist.</h3>
+            <p>
+              After selecting to join the waitlist of a course, the system adds the wait-listed course
+              to the user's schedule, colouring the entry in the same green as that used in the prompt.
+              The icon used to indicate the waitlisted status in the course (versus the registered or saved
+              status) is an hourglass, chosen to provide non-intrusive, yet obvious, feedback to the user
+              of the course's unique status.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/20%20--%20Search%20results%20-%20course%20details%20via%20calendar.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Waitlisted course entry.</h3>
+            <p>
+              In the same manner as with the other entries in the schedule, the system provides the user
+              with further details regarding the course when they hover over the icon. In this case the
+              system informs the user of their current place on the waitlist for the selected course.
+            </p>
+            <p>
+              This concludes the use case of joining the waitlist of a course.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/21%20--%20Search%20results%20-%20course%20details,%20dropping%20a%20course.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Course details, via schedule.</h3>
+            <p>
+              Here the user as selected an entry in the schedule for detailed viewing. The details match
+              those shown in when an item in the search set is selected, with the additional information
+              of the user's current status in the course (in this case, they are registered in the course).
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/22%20--%20Search%20results%20-%20course%20dropped%20safety%20prompt.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Dropping a course.</h3>
+            <p>
+              After having selected a course which they are currently registered in, the user was provided
+              a detailed view, with the option of dropping the course (previous image). The image shown here
+              is the immediate result of selecting the drop option.
+            </p>
+            <p>
+              Unlike the drop and register case, here there is no forcing function. This was a deliberate
+              choice. The act of dropping a course in the case comes from selection of the course in
+              the user's schedule, which is different from the beginning steps of registering for a course
+              in the course search results. This difference in approach reduces the chances of the user
+              making a capture error, as Norman calls them. Because of this, and the goal of ensuring that
+              the application be efficient ('user friendly'), the choice was made to forgo the use of a
+              forcing function, opting instead to rely entirely on the saftey of the system provided by
+              the prompt shown.
+            </p>
+            <p>
+              The result on the schedule can be seen behind the prompt; the system has down graded the
+              entry in the schedule from a registered course to a saved course. This is a further
+              layer of safety, from the saved course entry the user has the chance to undo the drop even
+              if they have dismissed the prompt shown.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/23%20--%20Search%20results%20-%20course%20drop%20undone.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Undoing a drop.</h3>
+            <p>
+              Here we see the result of opting for the system to undo the drop when provided the prompt
+              in the image above. The user has been reregistered for the course, and the course entry in
+              the schedule has been upgraded back to a registered course.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/24%20--%20Search%20results%20-%20course%20dropped.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Accepting a drop.</h3>
+            <p>
+              This finishes the use case of dropping a course. The image shown is the result of the
+              user accepting the result of the drop when provided the previously-shown saftey prompt.
+              The prompt is dismissed, and the newly-downgraded course is left in the calendar where
+              the registered course used to be.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/25%20--%20Search%20results%20-%20saved%20course%20details.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Unsaving a course.</h3>
+            <p>
+              This completes the use case of unsaving a course. The users selects a saved course from
+              their schedule and is provided the opportunity to register for it, unsave it, or dismiss
+              the prompt. The option to register for a course in this way both provides a safety
+              feature for dropping a course (which first downgrades it to a saved course) as well as
+              enabling the user to register for a saved course directly rather than using the saved
+              entry as a reminder of what course to search and register for. The goal here was again
+              efficiency.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/26%20--%20Search%20results%20-%20course%20unsaved.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>An unsaved course.</h3>
+            <p>
+              Here we see the results of choosing to unsave a course. The system removes the entry
+              from the schedule without prompt. Unsaving a course was not seen as destructive enough
+              to warrant extra confirmations, and in the interest of reducing the intrusiveness of
+              feedback overall, the decision was made to unsave a course without question.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/27%20--%20Search%20results%20-%20course%20details,%20similar%20course%20link.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Similar courses.</h3>
+            <p>
+              From here we begin the user case of seeking similar courses to some given course.
+              This begins with selecting a course, either from the search results or the schedule.
+              The thinking was that by making use of the course items already displayed to the user,
+              the application could avoid requiring the user to enter full course details in the
+              search bar, thereby keeping the application efficient while providing good utility.
+            </p>
+            <p>
+              From the detail course view, the user can select the similar courses link to be
+              given the results of a search for similar courses.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/28%20--%20Search%20results%20-%20similar%20courses.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Similar course results.</h3>
+            <p>
+              Here we are shown the results of a search for similar courses, as a result of the user
+              selecting the similar courses link on the detailed course view. To increase learnability,
+              the application populates the search bar with a search string which would have achieved
+              the same results, allowing the user the opportunity to better learn how to make use
+              of the search functionality directly.
+            </p>
+            <p>
+              This concludes the use case of finding similar courses.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/29%20--%20Search%20results%20-%20similar%20courses,%20drop%20down%20menu.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Settings options</h3>
+            <p>
+              From here we explore the use case of adjusting the default search settings. The case
+              begins when the user selects the button in the top right of the screen, which has both
+              a gear icon to convey the common notion of settings, and a down carat icon, indicating
+              that it is a drop-down menu. From the menu, the user can select settings for a range
+              of site functionality, here only the settings related to searching are considered.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/30%20--%20Search%20settings.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Changing search settings</h3>
+            <p>
+              Once on the settings page, the user has two modes of interaction, toggling and
+              radio buttons -- both of which are common to forms across the internet. These
+              methods were chosen to provide the cultural constraints associated with their usage:
+              for the toggles, the user is able to enable or disable a feature (here start and end
+              time restrictions); for the radio buttons, the user is able to select multiple items
+              at once to apply the given action to (exluding or preferring).
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/02%20--%20Landing.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>The landing page, again.</h3>
+            <p>
+              From the landing page the user has the addition options of viewing their schedule,
+              or a list of the relevant books. Here we follow the user choosing the schedule option.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/31%20--%20Schedule.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Schedule viewing.</h3>
+            <p>
+              This concludes the use case of viewing the user's class schedule. The user is able to
+              see as much schedule as the screen permits, and is provided a down-chevron button for
+              further scrolling through their schedule if needed.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/02%20--%20Landing.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>The landing page, one last time.</h3>
+            <p>
+              This time we follow the user choosing the text books option.
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/32%20--%20Books%20-%20book%201%20details.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Textbooks, details</h3>
+            <p>
+              This image shows the textbook view provided by the system to the user. The books
+              are represented as items in a list. Each item has a short summary of the book,
+              including the main title, the first few authors, the price, the course it is
+              used in, and the status in that course (whether it is mandatory or recommended).
+            </p>
+            <p>
+              In addition to this list overview, a larger detailed view of the books is provided
+              upon selection. By default, the first book in the list has it's details shown.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-7 col-xs-offset-1">
+            <img src="images/33%20--%20Books%20-%20book%202%20details.png" alt="..." class="img-rounded">
+          </div>
+          <div class="col-xs-4">
+            <h3>Textbooks, details 2</h3>
+            <p>
+              Here we see the result of the user selecting another book in the list. The detailed
+              view is changed to show the full details of the newly-selected book. These include
+              the cover image of the book, its location in the bookstore, the full title including
+              subtitles, the full authors list, and information regarding any used copies available
+              currently in the book store.
+            </p>
+            <p>
+              This concludes the final use case, viewing the textbooks associated with the user's
+              schedule.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">by V00186274</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
